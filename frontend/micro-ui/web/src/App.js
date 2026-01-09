@@ -3,8 +3,8 @@ import React from "react";
 import {
   initPGRComponents,
   PGRReducers,
-} from "@nudmcdgnpm/digit-ui-module-pgr";
-import { initFSMComponents } from "@nudmcdgnpm/upyog-ui-module-fsm";
+} from "@upyog/digit-ui-module-pgr";
+import { initFSMComponents } from "@upyog/digit-ui-module-fsm";
 import {
   PTModule,
   PTLinks,
@@ -22,19 +22,19 @@ import { initLibraries } from "@upyog/digit-ui-libraries";
 import {
   HRMSModule,
   initHRMSComponents,
-} from "@nudmcdgnpm/digit-ui-module-hrms";
+} from "@upyog/digit-ui-module-hrms";
 import {
   TLModule,
   TLLinks,
   initTLComponents,
-} from "@nudmcdgnpm/upyog-ui-module-tl";
+} from "@upyog/digit-ui-module-tl";
 import { initReceiptsComponents, ReceiptsModule } from "@upyog/digit-ui-module-receipts";
-import { initOBPSComponents } from "@nudmcdgnpm/upyog-ui-module-obps";
-import { initNOCComponents } from "@nudmcdgnpm/upyog-ui-module-noc";
+import { initOBPSComponents } from "@upyog/digit-ui-module-obps";
+import { initNOCComponents } from "@upyog/digit-ui-module-noc";
 import { initEngagementComponents } from "@upyog/digit-ui-module-engagement";
-import { initWSComponents } from "@nudmcdgnpm/upyog-ui-module-ws";
+import { initWSComponents } from "@upyog/digit-ui-module-ws";
 // import { initCustomisationComponents } from "./Customisations";
-import { initCommonPTComponents } from "@nudmcdgnpm/upyog-ui-module-commonpt";
+import { initCommonPTComponents } from "@upyog/digit-ui-module-commonpt";
 import { initBillsComponents } from "@upyog/digit-ui-module-bills";
 import {
   PTRModule,

@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useQueryClient } from "react-query";
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import { newConfig as newConfigOCEDCR } from "../../../config/ocEdcrConfig";
-import { uuidv4, convertDateToEpoch } from "../../../utils";
+import { convertDateToEpoch } from "../../../utils";
+import { v4 as uuidv4 } from "uuid";
 // import EDCRAcknowledgement from "./EDCRAcknowledgement";
 
 const CreateOCEDCR = ({ parentRoute }) => {

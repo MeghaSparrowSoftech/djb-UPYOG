@@ -5,23 +5,24 @@ import { initLibraries } from "@upyog/digit-ui-libraries";
 import { PGRReducers } from "@upyog/digit-ui-module-pgr";
 import { PTModule, PTLinks, PTComponents } from "@upyog/digit-ui-module-pt";
 import { MCollectModule, MCollectLinks } from "@upyog/digit-ui-module-mcollect";
-// import { TLModule, TLLinks } from "@nudmcdgnpm/upyog-ui-module-tl";
-import { initFSMComponents } from "@nudmcdgnpm/upyog-ui-module-fsm";
-import { initPGRComponents } from "@nudmcdgnpm/digit-ui-module-pgr";
+// import { TLModule, TLLinks } from "@upyog/digit-ui-module-tl";
+import { initFSMComponents } from "@upyog/digit-ui-module-fsm";
+import { initPGRComponents } from "@upyog/digit-ui-module-pgr";
 import { initDSSComponents } from "@upyog/digit-ui-module-dss";
-import { initHRMSComponents } from "@nudmcdgnpm/digit-ui-module-hrms";
+import { initHRMSComponents } from "@upyog/digit-ui-module-hrms";
 import { initReceiptsComponents, ReceiptsModule } from "@upyog/digit-ui-module-receipts";
 // import { initReportsComponents } from "@upyog/digit-ui-module-reports";
 import { initMCollectComponents } from "@upyog/digit-ui-module-mcollect";
-import { initTLComponents } from "@nudmcdgnpm/upyog-ui-module-tl";
+import { initTLComponents } from "@upyog/digit-ui-module-tl";
 import { PaymentModule, PaymentLinks, paymentConfigs } from "@upyog/digit-ui-module-common";
-import { HRMSModule } from "@nudmcdgnpm/digit-ui-module-hrms";
-import { initOBPSComponents } from "@nudmcdgnpm/upyog-ui-module-obps";
+import { HRMSModule } from "@upyog/digit-ui-module-hrms";
+import { initOBPSComponents } from "@upyog/digit-ui-module-obps";
 import { initEngagementComponents } from "@upyog/digit-ui-module-engagement";
-import { initNOCComponents } from "@nudmcdgnpm/upyog-ui-module-noc";
-import { initWSComponents } from "@nudmcdgnpm/upyog-ui-module-ws";
+import { initNOCComponents } from "@upyog/digit-ui-module-noc";
+import { initWSComponents } from "@upyog/digit-ui-module-ws";
+import {WSModule} from "@upyog/digit-ui-module-ws";
 import { DigitUI } from "@upyog/digit-ui-module-core";
-import { initCommonPTComponents } from "@nudmcdgnpm/upyog-ui-module-commonpt";
+import { initCommonPTComponents } from "@upyog/digit-ui-module-commonpt";
 import { initBillsComponents, BillsModule } from "@upyog/digit-ui-module-bills";
 
 // import {initCustomisationComponents} from "./customisations";
@@ -33,15 +34,16 @@ import "@nudmcdgnpm/upyog-css";
 import { PTRModule, PTRLinks, PTRComponents } from "@upyog/upyog-ui-module-ptr";
 import { ASSETComponents, ASSETLinks, ASSETModule } from "@upyog/upyog-ui-module-asset";
 
-import { 
-  EWModule, 
-  EWLinks, 
-  EWComponents }
+import {
+  EWModule,
+  EWLinks,
+  EWComponents
+}
   from "@upyog/upyog-ui-module-ew";
 
 import { SVComponents, SVLinks, SVModule } from "@upyog/upyog-ui-module-sv";
-import {CHBModule,CHBLinks,CHBComponents} from "@upyog/upyog-ui-module-chb";
-import {ADSModule,ADSLinks,ADSComponents} from "@upyog/upyog-ui-module-ads";
+import { CHBModule, CHBLinks, CHBComponents } from "@upyog/upyog-ui-module-chb";
+import { ADSModule, ADSLinks, ADSComponents } from "@upyog/upyog-ui-module-ads";
 import { WTModule, WTLinks, WTComponents } from "@nudmcdgnpm/upyog-ui-module-wt";
 import { VENDORComponents, VENDORLinks, VENDORModule } from "@nudmcdgnpm/upyog-ui-module-vendor";
 import { PGRAIComponents, PGRAILinks, PGRAIModule } from "@nudmcdgnpm/upyog-ui-module-pgrai";
@@ -141,26 +143,26 @@ const initDigitUI = () => {
     ASSETLinks,
     ...ASSETComponents,
     ADSLinks,
-  ADSModule,
-  ...ADSComponents,
-  SVModule,
-  SVLinks,
-  ...SVComponents,
-  EWModule,
-  EWLinks,
-  ...EWComponents,
-  CHBModule,
-  CHBLinks,
-  ...CHBComponents,
-  WTModule,
-  WTLinks,
-  ...WTComponents,
-  VENDORModule,
-  VENDORLinks,
-  ...VENDORComponents,
-  PGRAIModule,
-  PGRAILinks,
-  ...PGRAIComponents
+    ADSModule,
+    ...ADSComponents,
+    SVModule,
+    SVLinks,
+    ...SVComponents,
+    EWModule,
+    EWLinks,
+    ...EWComponents,
+    CHBModule,
+    CHBLinks,
+    ...CHBComponents,
+    WTModule,
+    WTLinks,
+    ...WTComponents,
+    VENDORModule,
+    VENDORLinks,
+    ...VENDORComponents,
+    PGRAIModule,
+    PGRAILinks,
+    ...PGRAIComponents
   });
 
   initFSMComponents();

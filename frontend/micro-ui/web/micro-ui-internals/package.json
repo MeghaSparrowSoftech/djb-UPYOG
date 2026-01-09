@@ -100,6 +100,7 @@
     "*.{js,css,md}": "prettier --write"
   },
   "dependencies": {
+    "crypto-js": "^4.2.0",
     "lodash": "4.17.21",
     "microbundle-crl": "^0.13.11"
   },
@@ -109,6 +110,6 @@
     "**/@babel/preset-env": "7.14.0",
     "**/@babel/plugin-transform-modules-commonjs": "7.14.0",
     "minimatch": "^3.1.2",
-    "glob":"7.2.3"
+    "glob": "7.2.3"
   }
 }
