@@ -20,7 +20,7 @@ import { initOBPSComponents } from "@upyog/digit-ui-module-obps";
 import { initEngagementComponents } from "@upyog/digit-ui-module-engagement";
 import { initNOCComponents } from "@upyog/digit-ui-module-noc";
 import { initWSComponents } from "@upyog/digit-ui-module-ws";
-import {WSModule} from "@upyog/digit-ui-module-ws";
+import { WSModule } from "@upyog/digit-ui-module-ws";
 import { DigitUI } from "@upyog/digit-ui-module-core";
 import { initCommonPTComponents } from "@upyog/digit-ui-module-commonpt";
 import { initBillsComponents, BillsModule } from "@upyog/digit-ui-module-bills";
@@ -121,6 +121,7 @@ const initTokens = (stateCode) => {
 };
 
 const initDigitUI = () => {
+  window.contextPath = window?.globalConfigs?.getConfig("CONTEXT_PATH") || "digit-ui";
   window?.Digit.ComponentRegistryService.setupRegistry({
     ...pgrComponents,
     PaymentModule,
