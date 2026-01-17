@@ -6,6 +6,7 @@ import { PGRReducers } from "@upyog/digit-ui-module-pgr";
 import { MCollectModule, MCollectLinks } from "@upyog/digit-ui-module-mcollect";
 // import { TLModule, TLLinks } from "@upyog/digit-ui-module-tl";
 import { initPGRComponents } from "@upyog/digit-ui-module-pgr";
+import {initfsmComponents} from "@upyog/digit-ui-module-fsm";
 import { initDSSComponents } from "@upyog/digit-ui-module-dss";
 import { initHRMSComponents } from "@upyog/digit-ui-module-hrms";
 import { initReceiptsComponents, ReceiptsModule } from "@upyog/digit-ui-module-receipts";
@@ -44,6 +45,7 @@ var Digit = window.Digit || {};
 const enabledModules = [
   "Tqm",
   "PGR",
+  "FSM",
   "Payment",
   "QuickPayLinks",
   "DSS",
@@ -130,6 +132,7 @@ const initDigitUI = () => {
   });
 
   initPGRComponents();
+  initfsmComponents();
   initDSSComponents();
   initMCollectComponents();
   initHRMSComponents();
