@@ -4,9 +4,9 @@ import ReactDOM from "react-dom";
 import { initLibraries } from "@upyog/digit-ui-libraries";
 import { PGRReducers } from "@upyog/digit-ui-module-pgr";
 import { MCollectModule, MCollectLinks } from "@upyog/digit-ui-module-mcollect";
-// import { TLModule, TLLinks } from "@upyog/digit-ui-module-tl";
+// import { TLModule, TLLinks } from "@upyog/upyog-ui-module-tl";
+import { initFSMComponents } from "@upyog/digit-ui-module-fsm";
 import { initPGRComponents } from "@upyog/digit-ui-module-pgr";
-import {initFSMComponents} from "@upyog/digit-ui-module-fsm";
 import { initDSSComponents } from "@upyog/digit-ui-module-dss";
 import { initHRMSComponents } from "@upyog/digit-ui-module-hrms";
 import { initReceiptsComponents, ReceiptsModule } from "@upyog/digit-ui-module-receipts";
@@ -16,7 +16,6 @@ import { PaymentModule, PaymentLinks, paymentConfigs } from "@upyog/digit-ui-mod
 import { HRMSModule } from "@upyog/digit-ui-module-hrms";
 import { initEngagementComponents } from "@upyog/digit-ui-module-engagement";
 import { initWSComponents } from "@upyog/digit-ui-module-ws";
-import { WSModule } from "@upyog/digit-ui-module-ws";
 import { DigitUI } from "@upyog/digit-ui-module-core";
 import { initCommonPTComponents } from "@upyog/digit-ui-module-commonpt";
 import { initBillsComponents, BillsModule } from "@upyog/digit-ui-module-bills";
@@ -25,7 +24,7 @@ import { initBillsComponents, BillsModule } from "@upyog/digit-ui-module-bills";
 
 // import { PGRModule, PGRLinks } from "@upyog/digit-ui-module-pgr";
 // import { Body, TopBar } from "@upyog/digit-ui-react-components";
-import "@mcd89/upyog-css";
+import "@nudmcdgnpm/upyog-css";
 
 import { PTRModule, PTRLinks, PTRComponents } from "@upyog/upyog-ui-module-ptr";
 import { ASSETComponents, ASSETLinks, ASSETModule } from "@upyog/upyog-ui-module-asset";
@@ -131,8 +130,8 @@ const initDigitUI = () => {
     ...PGRAIComponents
   });
 
-  initPGRComponents();
   initFSMComponents();
+  initPGRComponents();
   initDSSComponents();
   initMCollectComponents();
   initHRMSComponents();
