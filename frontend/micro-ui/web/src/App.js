@@ -111,9 +111,11 @@ const moduleReducers = (initData) => ({
 });
 
 function App() {
+    window.contextPath = window?.globalConfigs?.getConfig("CONTEXT_PATH") || "digit-ui";
   const stateCode =
     window.globalConfigs?.getConfig("STATE_LEVEL_TENANT_ID") ||
     process.env.REACT_APP_STATE_LEVEL_TENANT_ID;
+
   if (!stateCode) {
     return <h1>stateCode is not defined</h1>;
   }
