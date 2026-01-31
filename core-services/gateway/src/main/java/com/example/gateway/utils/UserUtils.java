@@ -1,6 +1,8 @@
 package com.example.gateway.utils;
 
 import com.example.gateway.config.ApplicationProperties;
+
+import java.time.Instant;
 import java.util.Collections;
 
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import org.egov.tracer.model.CustomException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
@@ -45,6 +48,13 @@ public class UserUtils {
             jwt = this.tokenValidator.validate(authToken);
         } catch (JwtException var10) {
             throw new CustomException("INVALID_TOKEN", var10.getMessage());
+        }
+
+        // Expiry check (optional if Spring already validates exp)
+        Instant exp = jwt.getExpiresAt();
+        if (exp != null && Instant.now().isAfter(exp)) {
+            log.warn("JWT expired. sub={}, exp={}", jwt.getSubject(), exp);
+            throw new CredentialsExpiredException("JWT token expired");
         }
 
         String preferredUsername = jwt.getClaimAsString("preferred_username");

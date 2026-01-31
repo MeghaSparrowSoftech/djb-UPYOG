@@ -1,11 +1,14 @@
 package org.egov.user.security;
 
 import org.egov.user.security.oauth2.custom.CustomTokenEnhancer;
+import org.egov.user.security.oauth2.custom.CustomTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -14,7 +17,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import redis.clients.jedis.JedisShardInfo;
+import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
+//import redis.clients.jedis.JedisShardInfo;
 
 import static org.egov.user.config.UserServiceConstants.USER_CLIENT_ID;
 
@@ -41,6 +45,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     private ClientDetailsService clientDetailsService;
 
     @Autowired
+    @Lazy
     private TokenStore tokenStore;
 
     @Override
@@ -61,14 +66,22 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
                 .authenticationManager(customAuthenticationManager);
     }
 
+//    @Bean
+//    public JedisConnectionFactory connectionFactory() throws Exception {
+//        return new JedisConnectionFactory(new JedisShardInfo(host));
+//    }
+
     @Bean
-    public JedisConnectionFactory connectionFactory() throws Exception {
-        return new JedisConnectionFactory(new JedisShardInfo(host));
+    public RedisTemplate<String, String> redisTemplate(org.springframework.data.redis.connection.RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, String> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        return template;
     }
 
     @Bean
     public DefaultTokenServices customTokenServices() {
-        DefaultTokenServices tokenServices = new DefaultTokenServices();
+        //DefaultTokenServices tokenServices = new DefaultTokenServices();
+        CustomTokenService tokenServices = new CustomTokenService();
         tokenServices.setTokenEnhancer(customTokenEnhancer);
         tokenServices.setTokenStore(tokenStore);
         tokenServices.setSupportRefreshToken(true);
@@ -77,4 +90,20 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         tokenServices.setClientDetailsService(clientDetailsService);
         return tokenServices;
     }
+
+//    @Bean
+//    public TokenStore tokenStore(JedisConnectionFactory connectionFactory,
+//                                 CustomAuthenticationKeyGenerator customAuthenticationKeyGenerator) {
+//
+//        RedisTokenStore redisTokenStore = new RedisTokenStore(connectionFactory);
+//        redisTokenStore.setAuthenticationKeyGenerator(customAuthenticationKeyGenerator);
+//        return redisTokenStore;
+//    }
+
+//    @Bean
+//    public TokenStore tokenStore() {
+//        RedisTokenStore redisTokenStore = new RedisTokenStore(connectionFactory());
+//        redisTokenStore.setAuthenticationKeyGenerator(customAuthenticationKeyGenerator);
+//        return redisTokenStore;
+//    }
 }

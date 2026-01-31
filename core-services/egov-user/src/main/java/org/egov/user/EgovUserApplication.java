@@ -27,17 +27,22 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import redis.clients.jedis.JedisShardInfo;
+//import redis.clients.jedis.JedisShardInfo;
 
 import javax.annotation.PostConstruct;
 import java.text.SimpleDateFormat;
@@ -62,6 +67,9 @@ public class EgovUserApplication {
 
     @Value("${spring.redis.host}")
     private String host;
+
+    @Value("${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
+    private String jwkSetUri;
 
     @Autowired
     private CustomAuthenticationKeyGenerator customAuthenticationKeyGenerator;
@@ -95,29 +103,51 @@ public class EgovUserApplication {
         return converter;
     }
 
-    @Bean
-    public ObjectMapper objectMapper() {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setTimeZone(TimeZone.getTimeZone(timeZone));
-        return objectMapper;
-    }
+//    @Bean
+//    public ObjectMapper objectMapper() {
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.setTimeZone(TimeZone.getTimeZone(timeZone));
+//        return objectMapper;
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+//    @Bean
+//    public TokenStore tokenStore() {
+//        RedisTokenStore redisTokenStore = new RedisTokenStore(connectionFactory());
+//        redisTokenStore.setAuthenticationKeyGenerator(customAuthenticationKeyGenerator);
+//        return redisTokenStore;
+//    }
+//
+//    @Bean
+//    public JedisConnectionFactory connectionFactory() {
+//        return new JedisConnectionFactory(new JedisShardInfo(host));
+//    }
+
+//    @Bean
+//    public JedisConnectionFactory connectionFactory(
+//            @Value("${spring.redis.host}") String host,
+//            @Value("${spring.redis.port}") int port
+//    ) {
+//        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+//        return new JedisConnectionFactory(config);
+//    }
+
+
     @Bean
-    public TokenStore tokenStore() {
-        RedisTokenStore redisTokenStore = new RedisTokenStore(connectionFactory());
+    public TokenStore tokenStore(org.springframework.data.redis.connection.RedisConnectionFactory connectionFactory) {
+        RedisTokenStore redisTokenStore = new RedisTokenStore(connectionFactory);
         redisTokenStore.setAuthenticationKeyGenerator(customAuthenticationKeyGenerator);
         return redisTokenStore;
     }
 
     @Bean
-    public JedisConnectionFactory connectionFactory() {
-        return new JedisConnectionFactory(new JedisShardInfo(host));
+    public JwtDecoder jwtDecoder() {
+        return NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
     }
 
     public static void main(String[] args) {

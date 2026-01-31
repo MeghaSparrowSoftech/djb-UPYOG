@@ -8,8 +8,7 @@ import org.egov.user.domain.model.Address;
 import org.egov.user.domain.model.Role;
 import org.egov.user.domain.model.User;
 import org.egov.user.domain.model.enums.*;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.SafeHtml;
+import javax.validation.constraints.Email;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -28,15 +27,14 @@ public class UserRequest {
 
     private Long id;
 
-    @SafeHtml
+    @Pattern(regexp = "^[A-Za-z0-9._-]{1,64}$", message = "Invalid username")
     @Size(max = 64)
     private String userName;
 
-    @SafeHtml
-    @Size(max = 40)
+    @Size(max = 2000)
     private String access_token;
 
-    @SafeHtml
+    @Pattern(regexp = "^[A-Za-z.]{1,5}$", message = "Invalid salutation")
     @Size(max = 5)
     private String salutation;
 
@@ -58,33 +56,33 @@ public class UserRequest {
     @Size(max = 128)
     private String emailId;
 
-    @SafeHtml
+    @Pattern(regexp = UserServiceConstants.PATTERN_MOBILE, message = "Invalid alternate contact")
     @Size(max = 50)
     private String altContactNumber;
 
-    @SafeHtml
+    @Pattern(regexp = "^[A-Z]{5}[0-9]{4}[A-Z]$", message = "Invalid PAN")
     @Size(max = 10)
     private String pan;
 
-    @SafeHtml
+    @Pattern(regexp = "^[0-9]{12}$", message = "Invalid Aadhaar")
     @Size(max = 20)
     private String aadhaarNumber;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     @Size(max = 300)
     private String permanentAddress;
 
-    @SafeHtml
+
     @Pattern(regexp = UserServiceConstants.PATTERN_CITY)
     @Size(max = 50)
     private String permanentCity;
 
-    @SafeHtml
+
     @Pattern(regexp = UserServiceConstants.PATTERN_PINCODE)
     @Size(max = 10)
     private String permanentPinCode;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     @Size(max = 300)
     private String correspondenceAddress;
 
@@ -97,7 +95,7 @@ public class UserRequest {
     private String correspondencePinCode;
     private Boolean active;
 
-    @SafeHtml
+    @Pattern(regexp = "^[a-zA-Z]{2}([_-][a-zA-Z]{2})?$", message = "Invalid locale")
     @Size(max = 16)
     private String locale;
 
@@ -110,19 +108,19 @@ public class UserRequest {
     private String fatherOrHusbandName;
     private GuardianRelation relationship;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     @Size(max = 36)
     private String signature;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     @Size(max = 32)
     private String bloodGroup;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     @Size(max = 36)
     private String photo;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     @Size(max = 300)
     private String identificationMark;
     private Long createdBy;
@@ -130,7 +128,7 @@ public class UserRequest {
     @Size(max = 64)
     private String password;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     private String otpReference;
     private Long lastModifiedBy;
 
@@ -140,11 +138,11 @@ public class UserRequest {
 
     private Set<RoleRequest> roles;
 
-    @SafeHtml
+    @Pattern(regexp = "^[0-9a-fA-F-]{36}$", message = "Invalid UUID")
     @Size(max = 36)
     private String uuid;
 
-    @SafeHtml
+    @Pattern(regexp = "^[^<>]*$", message = "Invalid input")
     @Size(max = 36)
     private String digilockerid;
 

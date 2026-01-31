@@ -16,7 +16,8 @@ import org.egov.user.domain.model.enums.BloodGroup;
 import org.egov.user.domain.model.enums.Gender;
 import org.egov.user.domain.model.enums.GuardianRelation;
 import org.egov.user.domain.model.enums.UserType;
-import org.hibernate.validator.constraints.Email;
+//import org.hibernate.validator.constraints.Email;
+import javax.validation.constraints.Email;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -126,39 +127,6 @@ public class User {
         }
     }
 
-    /**
-     * Validates user for v2 API with addresses array structure
-     */
-    public void validateNewUserV2(boolean createUserValidateName) {
-        if (isUsernameAbsent()
-                || (createUserValidateName && isNameAbsent())
-                || isMobileNumberAbsent()
-                || isActiveIndicatorAbsent()
-                || isTypeAbsent()
-                || isAddressesInvalid()
-                || isRolesAbsent()
-                || isOtpReferenceAbsent()
-                || isTenantIdAbsent()) {
-            throw new InvalidUserCreateException(this);
-        }
-    }
-
-    /**
-     * Simple validation for v2 API that skips old address validation
-     */
-    public void validateNewUserV2Simple(boolean createUserValidateName) {
-        if (isUsernameAbsent()
-                || (createUserValidateName && isNameAbsent())
-                || isMobileNumberAbsent()
-                || isActiveIndicatorAbsent()
-                || isTypeAbsent()
-                || isRolesAbsent()
-                || isOtpReferenceAbsent()
-                || isTenantIdAbsent()) {
-            throw new InvalidUserCreateException(this);
-        }
-    }
-
     public void validateUserModification() {
         if (isPermanentAddressInvalid()
                 || isCorrespondenceAddressInvalid()
@@ -176,14 +144,6 @@ public class User {
     @JsonIgnore
     public boolean isPermanentAddressInvalid() {
         return permanentAddress != null && permanentAddress.isInvalid();
-    }
-
-    @JsonIgnore
-    public boolean isAddressesInvalid() {
-        if (addresses == null || addresses.isEmpty()) {
-            return false; // Addresses are optional in v2
-        }
-        return addresses.stream().anyMatch(address -> address != null && address.isInvalid());
     }
 
     @JsonIgnore

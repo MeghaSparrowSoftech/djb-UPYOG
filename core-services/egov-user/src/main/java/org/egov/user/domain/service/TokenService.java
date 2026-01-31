@@ -2,19 +2,38 @@ package org.egov.user.domain.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.egov.tracer.model.CustomException;
 import org.egov.user.domain.exception.InvalidAccessTokenException;
 import org.egov.user.domain.model.SecureUser;
 import org.egov.user.domain.model.UserDetail;
+import org.egov.user.domain.service.utils.KeycloakTokenValidator;
+import org.egov.user.persistence.dto.UserRoleDTO;
 import org.egov.user.persistence.repository.ActionRestRepository;
+import org.egov.user.security.CustomAuthenticationKeyGenerator;
+import org.egov.user.web.contract.auth.User;
+import org.egov.user.web.contract.auth.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class TokenService {
 
+    @Autowired
     private TokenStore tokenStore;
 
     private ActionRestRepository actionRestRepository;
@@ -22,7 +41,25 @@ public class TokenService {
     @Value("${roles.state.level.enabled}")
     private boolean isRoleStateLevel;
 
-    private TokenService(TokenStore tokenStore, ActionRestRepository actionRestRepository) {
+
+    @Autowired
+    private KeycloakTokenValidator keycloakTokenValidator;
+
+    @Autowired
+    private UserService userService;
+
+//    @Autowired
+//    private JedisConnectionFactory jedisConnectionFactory;
+
+    @Autowired
+    private org.springframework.data.redis.connection.RedisConnectionFactory jedisConnectionFactory;
+
+
+
+    @Autowired
+    private CustomAuthenticationKeyGenerator authenticationKeyGenerator;
+
+    private TokenService(TokenStore tokenStore, ActionRestRepository actionRestRepository, JwtDecoder jwtDecoder) {
         this.tokenStore = tokenStore;
         this.actionRestRepository = actionRestRepository;
     }
@@ -34,17 +71,90 @@ public class TokenService {
      * @return
      */
     public UserDetail getUser(String accessToken) {
+        log.info("Received User details Request in getUser Method ");
         if (StringUtils.isEmpty(accessToken)) {
             throw new InvalidAccessTokenException();
         }
 
-        OAuth2Authentication authentication = tokenStore.readAuthentication(accessToken);
+        String token = accessToken.trim();
+
+        // 1) JWT path (Keycloak)
+        Jwt jwt = null;
+        try {
+            jwt = keycloakTokenValidator.validate(token);
+        }
+        catch (JwtException e) {
+            throw new CustomException("INVALID_TOKEN", e.getMessage());
+        }
+
+        if (jwt != null) {
+            log.info("Received JWT Token");
+            String username = jwt.getClaimAsString("preferred_username");
+            log.info("Received JWT Token user is {}", username);
+            log.info("Received JWT Token user is {}", jwt.getSubject());
+            if (StringUtils.isBlank(username)) {
+                username = jwt.getSubject();
+                log.info("useranme is : {} ",username);
+            }
+
+            // Expiry check (optional if Spring already validates exp)
+            Instant exp = jwt.getExpiresAt();
+            if (exp != null && Instant.now().isAfter(exp)) {
+                log.warn("JWT expired. sub={}, exp={}", jwt.getSubject(), exp);
+                throw new CredentialsExpiredException("JWT token expired");
+            }
+
+            final String tenantId = jwt.getClaimAsString("tenantId");
+            // 2) Extract a stable identifier
+            // Prefer UUID if your user-service stores it. Otherwise use preferred_username / email / phone.
+
+            String sub = jwt.getSubject();
+            log.info("sub: {}", sub);
+            log.info("JWT claims = {}", jwt.getClaims());
+            String uuid = extractUuidFromSub(sub);
+
+            List<UserRoleDTO> dbRoles = userService.getUserRolesByIdentifier(null, username, null, null, tenantId );
+
+//            Set<Role> roles = new HashSet<>();
+            //roles.add(new Role("SUPERUSER", "SUPERUSER", jwt.getClaimAsString("tenantId")));
+            //roles.add(new Role("EMPLOYEE", "EMPLOYEE", jwt.getClaimAsString("tenantId")));
+//            if (dbRoles != null) {
+//                for (UserRoleDTO dto : dbRoles) {
+//                    roles.add(new Role(dto.getName(), dto.getCode(), jwt.getClaimAsString("tenantId")));
+//                }
+//            }
+
+            Set<Role> roles = Optional.ofNullable(dbRoles)
+                    .orElseGet(Collections::emptyList)
+                    .stream()
+                    .filter(Objects::nonNull)
+                    .map(dto -> new Role(dto.getName(), dto.getCode(), tenantId))
+                    .collect(Collectors.toCollection(HashSet::new));
+
+            log.info("Retrieved roles {}", roles);
+
+            User u = User.builder()
+                        .uuid(uuid)
+                        .userName(username)
+                        .emailId(jwt.getClaimAsString("email"))
+                        .tenantId(jwt.getClaimAsString("tenantId"))
+                        .mobileNumber(jwt.getClaimAsString("mobileNumber"))
+                        .active(true)
+                        .roles(roles)
+                        .build();
+
+            SecureUser secureUser = new SecureUser(u);
+            return new UserDetail(secureUser, null);
+        }
+
+        // 2) Legacy path (old Redis token store)
+        OAuth2Authentication authentication = tokenStore.readAuthentication(token);
 
         if (authentication == null) {
             throw new InvalidAccessTokenException();
         }
 
-        SecureUser secureUser = ((SecureUser) authentication.getPrincipal());
+        SecureUser secureUser = (SecureUser) authentication.getPrincipal();
         return new UserDetail(secureUser, null);
 //		String tenantId = null;
 //		if (isRoleStateLevel && (secureUser.getTenantId() != null && secureUser.getTenantId().contains(".")))
@@ -56,4 +166,55 @@ public class TokenService {
 //		log.info("returning STATE-LEVEL roleactions for tenant: "+tenantId);
 //		return new UserDetail(secureUser, actions);
     }
+
+    private static String extractUuidFromSub(String sub) {
+        if (sub == null || sub.isBlank()) return null;
+
+        // typical: "f:providerId:uuid" or "uuid"
+        int lastColon = sub.lastIndexOf(':');
+        if (lastColon >= 0 && lastColon < sub.length() - 1) {
+            return sub.substring(lastColon + 1);
+        }
+        return sub; // fallback when sub is already uuid
+    }
+
+
+
+    /**
+     * Deletes the auth_to_access Redis mapping for a given OAuth2Authentication.
+     *
+     * @param authentication the authentication object
+     */
+    public void deleteAuthToAccessKey(OAuth2Authentication authentication) {
+        RedisConnection connection = null;
+        if (authentication == null) {
+            log.warn("Cannot delete auth_to_access key: authentication is null");
+            return;
+        }
+
+        try {
+            // You MUST inject your CustomAuthenticationKeyGenerator as a bean
+            String authenticationKey = authenticationKeyGenerator.extractKey(authentication);
+            String redisKey = "auth_to_access:" + authenticationKey;
+            log.info("Deleting Redis auth_to_access key: {}", redisKey);
+
+            // Select DB 0 (in case your factory is configured differently)
+            Long removed;
+            try {
+                connection = jedisConnectionFactory.getConnection();
+                connection.select(0);
+                removed = connection.del(redisKey.getBytes());
+            } finally {
+                if (connection != null) {
+                    connection.close();
+                }
+            }
+            log.info("Deleted key '{}'? {}", redisKey, removed == 1);
+
+        } catch (Exception e) {
+            log.error("Error while deleting auth_to_access key from Redis", e);
+        }
+    }
+
+
 }
