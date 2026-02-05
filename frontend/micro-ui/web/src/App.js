@@ -43,7 +43,6 @@ import {
   PGRAILinks,
   PGRAIModule,
 } from "@nudmcdgnpm/upyog-ui-module-pgrai";
-import { WSLinks } from "@djb25/digit-ui-module-ws";
 // import { initReportsComponents } from "@upyog/digit-ui-module-reports";
 
 initLibraries();
@@ -102,7 +101,7 @@ window.Digit.ComponentRegistryService.setupRegistry({
   PGRAILinks,
   ...PGRAIComponents,
   // WSModule,
-  WSLinks,
+  // WSLinks,
 });
 
 initPGRComponents();
