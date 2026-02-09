@@ -27,7 +27,7 @@ public class MDMSController {
     @PostMapping("_search")
     @ResponseBody
     private ResponseEntity<?> search(@RequestBody @Valid MdmsCriteriaReq mdmsCriteriaReq) {
-
+        log.info("MDMSController mdmsCriteriaReq [" + mdmsCriteriaReq + "]");
         Map<String, Map<String, JSONArray>> response = mdmsService.searchMaster(mdmsCriteriaReq);
         MdmsResponse mdmsResponse = new MdmsResponse();
         mdmsResponse.setMdmsRes(response);
